@@ -1,6 +1,8 @@
-import { Component, input, Input, InputSignal } from '@angular/core';
+import { Component, input, Input, InputSignal, OnChanges, SimpleChanges } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { Monster } from '../../models/monster.model';
+import { IconProp } from '@fortawesome/fontawesome-svg-core';
+import { MonsterTypeProperties } from '../../utils/monster.utils';
 
 @Component({
   selector: 'app-playing-card',
@@ -11,17 +13,19 @@ import { Monster } from '../../models/monster.model';
   templateUrl: './playing-card.component.html',
   styleUrl: './playing-card.component.css'
 })
-export class PlayingCardComponent {
+export class PlayingCardComponent implements OnChanges {
+  
+  @Input() monster = new Monster();
+  monsterTypeIcon: IconProp = "bolt";
+  backgroundColor: string = "rgb(255, 255, 104)";
 
-  // @Input({
-  //   required: true,
-  //   alias: 'my-monster',
-  //   transform: (value: Monster) => {
-  //     value.hp = value.hp * 2;
-  //     return value;
-  //   }
-  // }) monster: Monster = new Monster();
-
-  monster: InputSignal<Monster> = input(new Monster);
+  ngOnChanges(changes: SimpleChanges): void {
+    if(changes['monster']) {
+      if (changes['monster'].previousValue?.type !== changes['monster'].currentValue.type) {
+        this.monsterTypeIcon = MonsterTypeProperties[this.monster.type].icon;
+        this.backgroundColor = MonsterTypeProperties[this.monster.type].color;
+      }
+    }
+  }
 
 }
