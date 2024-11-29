@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, input, Input, model, output, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
@@ -14,17 +14,13 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 })
 export class SearchBarComponent {
 
-  @Input() search = 'Initial';
-  @Output() searchChange = new EventEmitter<string>();
+  search = model<string>('Initial');
+  // searchChange = output<string>();
 
-  @Output('submit') searchButtonClick = new EventEmitter();
+  searchButtonClick = output();
 
   searchClick() {
     this.searchButtonClick.emit();
-  }
-
-  updateSearch(value: string) {
-    this.searchChange.emit(value);
   }
 
 }

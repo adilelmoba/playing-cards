@@ -2,8 +2,7 @@
   <input 
     type="text" 
     placeholder="Search…" 
-    [ngModel]="search"
-    (ngModelChange)="updateSearch($event)"
+    [(ngModel)]="search"
   >
   <button (click)="searchClick()">
     <fa-icon icon="search" size="1x" class="" ></fa-icon>
