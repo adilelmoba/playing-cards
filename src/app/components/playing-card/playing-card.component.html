@@ -1,19 +1,19 @@
 <div id="card">
-  <div id="inside" [style.background-color]="backgroundColor">
+  <div id="inside" [style.background-color]="backgroundColor()">
     <header>
       <div class="left">
-        <div id="name">{{ monster.name }}</div>
+        <div id="name">{{ monster().name }}</div>
       </div>
 
       <div class="right">
-        <div id="hp">{{ monster.hp }} HP</div>
-        <fa-icon [icon]="monsterTypeIcon" size="1x" class="energy icon" ></fa-icon>
+        <div id="hp">{{ monster().hp }} HP</div>
+        <fa-icon [icon]="monsterTypeIcon()" size="1x" class="energy icon" ></fa-icon>
       </div>
     </header>
 
     <figure id="art">
-      <img [src]="monster.image" alt="">
-      <figcaption>{{ monster.figureCaption }}</figcaption> 
+      <img [src]="monster().image" alt="">
+      <figcaption>{{ monster().figureCaption }}</figcaption> 
     </figure>
 
     <div id="capacities">
@@ -24,13 +24,13 @@
             <fa-icon icon="bolt" size="1x" class="energy icon" ></fa-icon>
            </div>
 
-           <div class="name">{{ monster.attackName }}</div>
-           <div class="damage">{{ monster.attackStrength }}</div>
+           <div class="name">{{ monster().attackName }}</div>
+           <div class="damage">{{ monster().attackStrength }}</div>
         </div>
       </div>
 
       <div class="description">
-        {{ monster.attackDescription }}
+        {{ monster().attackDescription }}
       </div>
     </div>
   </div>
