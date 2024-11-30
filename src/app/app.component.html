@@ -1,11 +1,21 @@
-<button
-  (click)="toggleMonster()"
->
-  Toggle Monster
-</button>
-
+<app-search-bar [(search)]="search" />
 <div id="card-list">
-  <app-playing-card
-    [monster]="selectedMonster()"
-  />
+  @for(monster of filteredMonsters(); track monster.name; let i = $index ) {
+    <div>
+      Index: {{ i + 1 }}
+    </div>
+    <app-playing-card
+      [monster]="monster"
+    />
+  } @empty {
+    No monsters found !
+  }
 </div>
+<!-- 
+@if(filteredMonsters().length == 0) {
+  <div class="center">
+    No monsters found !
+  </div>
+} @else {
+  <div class="center">Found {{ filteredMonsters().length }} monsters !</div>
+} -->

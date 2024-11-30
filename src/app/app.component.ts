@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, effect, inject, model, OnInit, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { PlayingCardComponent } from "./components/playing-card/playing-card.component";
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
@@ -6,30 +6,31 @@ import { fontAwesomeIcons } from './shared/font-awesome-icons';
 import { Monster } from './models/monster.model';
 import { SearchBarComponent } from "./components/search-bar/search-bar.component";
 import { MonsterType } from './utils/monster.utils';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [PlayingCardComponent],
+  imports: [
+    PlayingCardComponent,
+    CommonModule,
+    SearchBarComponent
+],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
 export class AppComponent implements OnInit {
 
   monsters!: Monster[];
-  count = 0;
-  search = '';
-
-  selectedMonsterIndex = signal(1);
-  selectedMonster = computed(() => {
-    return this.monsters[this.selectedMonsterIndex()]
+  search = model('');
+  
+  filteredMonsters = computed(() => {
+    return this.monsters.filter(monster => 
+      monster.name.toLowerCase().includes(this.search().toLowerCase())
+    );
   });
 
   constructor() {
-    effect(() => {
-      console.log(this.selectedMonster())
-    })
-
     this.monsters = [];
 
     const monster1 = new Monster();
@@ -45,6 +46,22 @@ export class AppComponent implements OnInit {
     monster2.hp = 60;
     monster2.figureCaption = "N°003 Car";
     this.monsters.push(monster2);
+
+    const monster3 = new Monster();
+    monster3.name = 'Bulb';
+    monster3.image = 'assets/img/3.png';
+    monster3.type = MonsterType.PLANT;
+    monster3.hp = 60;
+    monster3.figureCaption = "N°004 Bulb";
+    this.monsters.push(monster3);
+
+    const monster4 = new Monster();
+    monster4.name = 'Sala';
+    monster4.image = 'assets/img/4.png';
+    monster4.type = MonsterType.WATER;
+    monster4.hp = 60;
+    monster4.figureCaption = "N°005 Sala";
+    this.monsters.push(monster4);
   }
 
   faIconLibrary = inject(FaIconLibrary);
@@ -55,14 +72,6 @@ export class AppComponent implements OnInit {
 
   private initFontAwesome() {
     this.faIconLibrary.addIcons(...fontAwesomeIcons);
-  }
-
-  increaseCount() {
-    this.count++;
-  }
-
-  toggleMonster() {
-    this.selectedMonsterIndex.set((this.selectedMonsterIndex() + 1) % this.monsters.length);
   }
 
 }

@@ -22,16 +22,5 @@ export class PlayingCardComponent{
   backgroundColor = computed(() => {
     return MonsterTypeProperties[this.monster().type].color;
   });
-  // monsterTypeIcon: IconProp = "bolt";
-  // backgroundColor: string = "rgb(255, 255, 104)";
-
-  // ngOnChanges(changes: SimpleChanges): void {
-  //   if(changes['monster']) {
-  //     if (changes['monster'].previousValue?.type !== changes['monster'].currentValue.type) {
-  //       this.monsterTypeIcon = MonsterTypeProperties[this.monster().type].icon;
-  //       this.backgroundColor = MonsterTypeProperties[this.monster().type].color;
-  //     }
-  //   }
-  // }
 
 }
