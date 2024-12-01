@@ -6,13 +6,21 @@ import { MonsterType } from '../../utils/monster.utils';
 import { PlayingCardComponent } from "../../components/playing-card/playing-card.component";
 import { Monster } from '../../models/monster.model';
 import { MonsterService } from '../../services/monster/monster.service';
+import { MatButtonModule } from '@angular/material/button';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
 
 @Component({
   selector: 'app-monster',
   standalone: true,
   imports: [
     ReactiveFormsModule,
-    PlayingCardComponent
+    PlayingCardComponent,
+    MatButtonModule,
+    MatInputModule,
+    MatFormFieldModule,
+    MatSelectModule,
 ],
   templateUrl: './monster.component.html',
   styleUrl: './monster.component.css'
