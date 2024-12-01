@@ -10,6 +10,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
+import { MatDialog } from '@angular/material/dialog';
+import { DeleteMonsterConfirmationDialogComponent } from '../../components/delete-monster-confirmation-dialog/delete-monster-confirmation-dialog.component';
 
 @Component({
   selector: 'app-monster',
@@ -36,6 +38,7 @@ export class MonsterComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private formBuilder = inject(FormBuilder);
   private monsterService = inject(MonsterService);
+  private readonly dialog = inject(MatDialog);
 
   formGroup = this.formBuilder.group({
     name : [ '', Validators.required ],
@@ -98,6 +101,16 @@ export class MonsterComponent implements OnInit, OnDestroy {
       this.monsterService.update(this.monster);
     }
     this.navigateBack();
+  }
+
+  onDeleteMonster() {
+    const dialogRef = this.dialog.open(DeleteMonsterConfirmationDialogComponent);
+    dialogRef.afterClosed().subscribe(confirmation => {
+      if(confirmation) {
+        this.monsterService.delete(this.monsterId);
+        this.navigateBack();
+      }
+    });
   }
 
   isFieldValid(name: string) {

@@ -64,3 +64,12 @@ button {
   background-color: #0C4C9F !important;
   color: #fff !important;
 }
+
+.button-container.left, .button-container.right {
+  display: inline-block;
+  width: 50%;
+}
+
+.button-container.right {
+  text-align: right;
+}

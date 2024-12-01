@@ -154,7 +154,17 @@
       }
     </mat-form-field>
 
-    <div class="button-container">
+    <div class="button-container left">
+      <button 
+        (click)="onDeleteMonster()"
+        type="button"
+        mat-flat-button
+        color="warn"
+      >
+        Delete
+      </button>
+    </div>
+    <div class="button-container right">
       <button 
         (click)="navigateBack()"
         mat-button
