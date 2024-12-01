@@ -8,6 +8,11 @@ form {
   margin: 10px 0;
 }
 
+input[type="file"] {
+  cursor: pointer;
+  border: 1px solid #ccc;
+}
+
 label {
   font-size: small;
   display: block;
@@ -26,4 +31,23 @@ button {
 .error {
   font-size: x-small;
   color: red;
+}
+
+.preview, .main {
+  display: inline-block;
+  vertical-align: top;
+}
+
+.preview {
+  width: 300px;
+  margin: 20px auto;
+}
+
+.main {
+  width: calc(100% - 340px);
+}
+
+.button-container {
+  display: flex;
+  gap: 10px;  
 }

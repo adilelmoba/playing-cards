@@ -20,9 +20,9 @@ export class MonsterService {
 
   private load() {
     const monstersData = localStorage.getItem('monsters');
-    if(monstersData) {
+    if (monstersData) {
       this.monsters = JSON.parse(monstersData).map((monsterJSON: Monster) => Object.assign(new Monster(), monsterJSON));
-      this.currentIndex = Math.max(...this.monsters.map(monster => monster.id));
+      this.currentIndex = Math.max(...this.monsters.map(monster => monster.id)) + 1;
     } else {
       this.init();
       this.save();
@@ -91,17 +91,19 @@ export class MonsterService {
     const monsterCopy = monster.copy();
 
     const monsterIndex = this.monsters.findIndex(originalMonster => originalMonster.id === monster.id);
-    if(monsterIndex !== -1) {
+    if (monsterIndex !== -1) {
       this.monsters[monsterIndex] = monsterCopy.copy();
+      this.save();
     }
 
     return monsterCopy;
   }
-  
+
   delete(id: number) {
     const monsterIndex = this.monsters.findIndex(originMonster => originMonster.id === id);
-    if(monsterIndex !== -1) {
+    if (monsterIndex !== -1) {
       this.monsters.splice(monsterIndex, 1);
+      this.save();
     }
   }
 

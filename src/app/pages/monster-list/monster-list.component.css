@@ -10,3 +10,7 @@
   margin-top: 40px;
   text-align: center;
 }
+
+app-playing-card {
+  cursor: pointer;
+}

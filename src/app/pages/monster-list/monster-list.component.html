@@ -3,6 +3,7 @@
   @for(monster of filteredMonsters(); track monster.name; let i = $index ) {
     <app-playing-card
       [monster]="monster"
+      (click)="openMonster(monster)"
     />
   } @empty {
     No monsters found !
@@ -16,7 +17,7 @@
   <button
     (click)="addMonster()"
   >
-    Add generic Monster
+    Add Monster
   </button>
 </div>
 <br/>
