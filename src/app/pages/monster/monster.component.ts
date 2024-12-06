@@ -1,9 +1,15 @@
 import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { filter, of, Subscription, switchMap } from 'rxjs';
 import { MonsterType } from '../../utils/monster.utils';
-import { PlayingCardComponent } from "../../components/playing-card/playing-card.component";
+import { PlayingCardComponent } from '../../components/playing-card/playing-card.component';
 import { Monster } from '../../models/monster.model';
 import { MonsterService } from '../../services/monster/monster.service';
 import { MatButtonModule } from '@angular/material/button';
@@ -23,67 +29,70 @@ import { DeleteMonsterConfirmationDialogComponent } from '../../components/delet
     MatInputModule,
     MatFormFieldModule,
     MatSelectModule,
-],
+  ],
   templateUrl: './monster.component.html',
-  styleUrl: './monster.component.css'
+  styleUrl: './monster.component.css',
 })
 export class MonsterComponent implements OnInit, OnDestroy {
-
-  monsterId: number = -1;
-  monsterTypes = Object.values(MonsterType);
-  private routeSubscription: Subscription | null = null;
-  private formValuesSubscription: Subscription | null = null;
-
-  private route  = inject(ActivatedRoute);
+  private route = inject(ActivatedRoute);
   private router = inject(Router);
   private formBuilder = inject(FormBuilder);
   private monsterService = inject(MonsterService);
   private readonly dialog = inject(MatDialog);
 
+  monsterId: number = -1;
+  monsterTypes = Object.values(MonsterType);
+
+  private subscriptions: Subscription = new Subscription();
+
   formGroup = this.formBuilder.group({
-    name : [ '', Validators.required ],
-    image: [ '', Validators.required ],
-    type : [ MonsterType.ELECTRIC, Validators.required ],
-    hp   : [ 0, [
-      Validators.required,
-      Validators.min(1),
-      Validators.max(200)
-    ]],
-    figureCaption    : [ '', Validators.required ],
-    attackName       : [ '', Validators.required ],
-    attackStrength   : [ 0, [
-      Validators.required,
-      Validators.min(1),
-      Validators.max(200)
-    ]],
-    attackDescription: [ '', Validators.required ],
+    name: ['', Validators.required],
+    image: ['', Validators.required],
+    type: [MonsterType.ELECTRIC, Validators.required],
+    hp: [0, [Validators.required, Validators.min(1), Validators.max(200)]],
+    figureCaption: ['', Validators.required],
+    attackName: ['', Validators.required],
+    attackStrength: [
+      0,
+      [Validators.required, Validators.min(1), Validators.max(200)],
+    ],
+    attackDescription: ['', Validators.required],
   });
 
   monster: Monster = Object.assign(new Monster(), this.formGroup.value);
   imagePreview: string | ArrayBuffer | null = this.monster.image || null;
 
   ngOnInit() {
-    this.formValuesSubscription = this.formGroup.valueChanges.subscribe(data => {
-      this.monster = this.monster.copy();
-      Object.assign(this.monster, data);
-    });
-
-    this.routeSubscription = this.route.params.subscribe(params => {
-      if(params['id']) {
-        this.monsterId = +params['id'];
-        const monsterFound = this.monsterService.get(this.monsterId);
-        if(monsterFound) {
-          this.monster = monsterFound;
-          this.formGroup.patchValue(monsterFound);
-          this.imagePreview = monsterFound.image;
-        }
+    const formValuesSubscription = this.formGroup.valueChanges.subscribe(
+      (data) => {
+        this.monster = this.monster.copy();
+        Object.assign(this.monster, data);
       }
-    })
+    );
+    this.subscriptions.add(formValuesSubscription);
+
+    const routeSubscription = this.route.params
+      .pipe(
+        switchMap((params) => {
+          if (params['id']) {
+            this.monsterId = +params['id'];
+            return this.monsterService.get(this.monsterId);
+          }
+          return of(null);
+        })
+      )
+      .subscribe((monster) => {
+        if (monster) {
+          this.monster = monster;
+          this.formGroup.patchValue(monster);
+          this.imagePreview = monster.image;
+        }
+      });
+    this.subscriptions.add(routeSubscription);
   }
 
   ngOnDestroy(): void {
-    this.routeSubscription?.unsubscribe();
-    this.formValuesSubscription?.unsubscribe();
+    this.subscriptions?.unsubscribe();
   }
 
   next() {
@@ -94,23 +103,32 @@ export class MonsterComponent implements OnInit, OnDestroy {
 
   onSubmit($event: Event) {
     event?.preventDefault();
-    if(this.monsterId === -1) {
-      this.monsterService.add(this.monster);
+    let saveObservable = null;
+    if (this.monsterId === -1) {
+      saveObservable = this.monsterService.add(this.monster);
     } else {
       this.monster.id = this.monsterId;
-      this.monsterService.update(this.monster);
+      saveObservable = this.monsterService.update(this.monster);
     }
-    this.navigateBack();
+    const saveSbscritption = saveObservable.subscribe((_) => {
+      this.navigateBack();
+    });
+    this.subscriptions.add(saveSbscritption);
   }
 
   onDeleteMonster() {
-    const dialogRef = this.dialog.open(DeleteMonsterConfirmationDialogComponent);
-    dialogRef.afterClosed().subscribe(confirmation => {
-      if(confirmation) {
-        this.monsterService.delete(this.monsterId);
+    const dialogRef = this.dialog.open(
+      DeleteMonsterConfirmationDialogComponent
+    );
+    dialogRef
+      .afterClosed()
+      .pipe(
+        filter((confirmation) => confirmation),
+        switchMap((_) => this.monsterService.delete(this.monsterId))
+      )
+      .subscribe((_) => {
         this.navigateBack();
-      }
-    });
+      });
   }
 
   isFieldValid(name: string) {
@@ -136,6 +154,4 @@ export class MonsterComponent implements OnInit, OnDestroy {
   navigateBack() {
     this.router.navigate(['/home']);
   }
-  
-
 }

@@ -5,6 +5,8 @@ import { SearchBarComponent } from "../../components/search-bar/search-bar.compo
 import { PlayingCardComponent } from "../../components/playing-card/playing-card.component";
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-monster-list',
@@ -12,23 +14,25 @@ import { Router } from '@angular/router';
   imports: [
     SearchBarComponent,
     PlayingCardComponent,
-    CommonModule],
+    CommonModule,
+    MatButtonModule,
+  ],
   templateUrl: './monster-list.component.html',
   styleUrl: './monster-list.component.css'
 })
 export class MonsterListComponent {
 
-  monsters = signal<Monster[]>([]);
-  search = model('');
-
   private monsterService = inject(MonsterService);
   private router = inject(Router);
+
+  monsters = toSignal(this.monsterService.getAll());
+  search = model('');
   
   constructor() {  }
 
   filteredMonsters = computed(() => {
-    return this.monsters().filter(monster => 
-      monster.name.toLowerCase().includes(this.search().toLowerCase())
+    return this.monsters()?.filter(monster => 
+      monster.name.toLowerCase().includes(this.search().toLowerCase()) ?? []
     );
   });
 
@@ -37,7 +41,7 @@ export class MonsterListComponent {
   }
 
   ngOnInit(): void {
-    this.monsters.set(this.monsterService.getAll());
+    // this.monsters.set();
   }
 
   openMonster(monster: Monster) {
